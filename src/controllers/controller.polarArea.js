@@ -55,8 +55,8 @@ defaults._set('polarArea', {
 				var data = chart.data;
 				if (data.labels.length && data.datasets.length) {
 					return data.labels.map(function(label, i) {
-						var meta = chart.getDatasetMeta(0);
-						var ds = data.datasets[0];
+						var meta = chart.getDatasetMeta(i);
+						var ds = data.datasets[i];
 						var arc = meta.data[i];
 						var custom = arc.custom || {};
 						var valueAtIndexOrDefault = helpers.valueAtIndexOrDefault;
@@ -70,7 +70,7 @@ defaults._set('polarArea', {
 							fillStyle: fill,
 							strokeStyle: stroke,
 							lineWidth: bw,
-							hidden: isNaN(ds.data[i]) || meta.data[i].hidden,
+							hidden: meta.data[i].hidden,
 
 							// Extra data used for toggling the correct item
 							index: i
@@ -98,11 +98,27 @@ defaults._set('polarArea', {
 	// Need to override these to give a nice default
 	tooltips: {
 		callbacks: {
-			title: function() {
-				return '';
+			title: function(tooltipItems, data) {
+				// Pick first xLabel for now
+				var title = '';
+				var labels = [];
+
+				for(var i = 0; i < data.datasets.length; i++) {
+					labels.push(data.datasets[i].label);
+				}
+
+				var labelCount = labels ? labels.length : 0;
+
+				if (tooltipItems.length > 0) {
+					var item = tooltipItems[0];
+					title = labels[item.datasetIndex];
+				}
+
+				return title;
 			},
 			label: function(item, data) {
-				return data.labels[item.index] + ': ' + item.yLabel;
+				var datasetLabel = data.datasets[item.datasetIndex].label || '';
+				return datasetLabel + ': ' + item.yLabel;
 			}
 		}
 	}

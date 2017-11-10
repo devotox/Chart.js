@@ -24,9 +24,21 @@ defaults._set('bubble', {
 
 	tooltips: {
 		callbacks: {
-			title: function() {
-				// Title doesn't make sense for scatter since we format the data as a point
-				return '';
+			title: function(tooltipItems, data) {
+				// Pick first xLabel for now
+				var title = '';
+				var labels = data.labels;
+				var labelCount = labels ? labels.length : 0;
+
+				if (tooltipItems.length > 0) {
+					var item = tooltipItems[0];
+
+					if (labelCount > 0 && item.index < labelCount) {
+						title = labels[item.index];
+					}
+				}
+
+				return title;
 			},
 			label: function(item, data) {
 				var datasetLabel = data.datasets[item.datasetIndex].label || '';
